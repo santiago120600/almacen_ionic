@@ -12,7 +12,7 @@ import { LoadingController } from '@ionic/angular';
   providedIn: 'root'
 })
 export class RestService {
-  apiUrl = "http://192.168.0.107/almacen_services_sw14/index.php/";
+  apiUrl = "http://192.168.0.13/almacen_services_sw14/index.php/";
   private httpClientFiles: HttpClient;
   public authState =  new BehaviorSubject(false);
 
@@ -37,9 +37,16 @@ export class RestService {
     });
     await loading.present();
     console.info(this.apiUrl);
-    return this.http.post<any>(this.apiUrl+"users/api/login",_data).subscribe(result =>{
+    return this.http.post<any>(this.apiUrl+"users/api/login_mobile",_data).subscribe(result =>{
       loading.dismiss();
-      console.info(result);
+      if(result.status == "success"){
+          this.storage.set('ALMACEN_SESS',result.data);
+          this.authState.next(true);
+      }else if(result.status=="error"){
+          this.display_toast('Error',"danger",result.message,'top',4000);
+      }else{
+          this.display_toast('Error',"danger","Error de comunicación, intente más tarde",'top',4000);
+      }
     },(err) => {
       console.info(err);
       this.display_toast('Error',"danger","Error de comunicación, intente más tarde",'top',4000);
@@ -59,7 +66,7 @@ export class RestService {
     return this.http.delete<any>(this.apiUrl+_uri,{params: _params});
   }
 
-  async logout(user : any){
+  async logout(){
     const loading = await this.loadingController.create({
       message: 'Cerrando sesión...'
     });

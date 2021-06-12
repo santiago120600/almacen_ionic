@@ -8,6 +8,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
+
+    user = {
+        "pEmail":"",
+        "pPassword":""
+    };
+
   constructor(
     private restService : RestService
   ) {
@@ -18,10 +24,8 @@ export class LoginPage implements OnInit {
   }
 
   do_login(){
-    let data = {
-
-    };
-    this.restService.login(data);
+    console.log(this.user);
+    this.restService.login(this.user);
   }
 
 }
